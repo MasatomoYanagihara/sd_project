@@ -3,8 +3,10 @@
     <Counter name="カウンター１" :initCount="5" @emitUp="getEvent" />
     <Counter name="カウンター２" :initCount="10" @emitUp="getEvent" />
 
-    <p>{{ primitiveStore.$data.globalCount }}</p>
+    <p>computed経由でstateのglobalCountを表示：{{ count }}</p>
+    <p>primitiveStore：{{ primitiveStore.$data.globalCount }}</p>
     <input type="text" v-model="primitiveStore.$data.globalCount" />
+    <p>globalCount：{{ globalCount }}</p>
   </div>
 </template>
 
@@ -12,6 +14,7 @@
 // @ is an alias to /src
 import Counter from "@/components/Counter.vue";
 import primitiveStore from "@/primitiveStore.js";
+import { mapState } from "vuex";
 
 export default {
   name: "Home",
@@ -24,10 +27,18 @@ export default {
       primitiveStore,
     };
   },
+  computed: {
+    count() {
+      /* this.$store.stateでstoreのstateにアクセスできる */
+      return this.$store.state.globalCount;
+    },
+    ...mapState(["globalCount"]),
+  },
   methods: {
     getEvent(payload) {
       console.log(payload);
-      this.primitiveStore.$data.globalCount++;
+      /* this.$store.commit()でstoreのmutationsにアクセスできる */
+      this.$store.commit("globalIncrement");
     },
   },
 };
